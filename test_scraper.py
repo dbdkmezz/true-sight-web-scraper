@@ -6,17 +6,17 @@ import unittest
 
 class TestScrapingOfAdvantages(unittest.TestCase):
     def setUp(self):
-        file_string = scraper.load_file('samples/Disruptor.html')
+        file_string = scraper.load_file("samples/Disruptor.html")
         self.list = scraper.get_advantages_from_string(file_string)
 
     def test_first_name(self):
-        self.assertEqual(self.list[0].name, 'Axe')
+        self.assertEqual(self.list[0].name, "Axe")
 
     def test_first_advantage(self):
         self.assertEqual(self.list[0].advantage, 1.85)
 
     def test_last_name(self):
-        self.assertEqual(self.list[-1].name, 'Io')
+        self.assertEqual(self.list[-1].name, "Io")
 
     def test_last_advantage(self):
         self.assertEqual(self.list[-1].advantage, -2.1)
@@ -25,13 +25,16 @@ class TestScrapingOfAdvantages(unittest.TestCase):
         self.assertEqual(len(self.list), 110)
 
 
-# class TestGetHeroNames(unittest.TestCase):
-#     def setUp(self):
-#         file_string = scraper.load_file('samples/Heroes_dota2.com.html')
-#         self.list = scraper.get_hero_names_from_string(file_string)
+class TestGetHeroNames(unittest.TestCase):
+    def setUp(self):
+        file_string = scraper.load_file("samples/Heroes_dota2.com.html")
+        self.list = scraper.get_hero_names_from_string(file_string)
 
-#     def test_correct_number_names_loaded(self):
-#         self.assertEqual(len(self.list), 111)
+    def test_correct_number_names_loaded(self):
+        self.assertEqual(len(self.list), 111)
+
+    def test_contains_disruptor(self):
+        self.assertEqual(self.list.count("Disruptor"), 1)
 
 
 class TestHelperFunctions(unittest.TestCase):
@@ -48,5 +51,5 @@ class TestHelperFunctions(unittest.TestCase):
         self.assertEqual(scraper.get_num_from_percent(string), 0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
