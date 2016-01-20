@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import re
 import requests
+import data_verification
 
 ALL_HERO_NAMES_URL = "http://www.dota2.com/heroes/"
 
@@ -93,7 +94,10 @@ def load_all_hero_data():
     return results
 
 if __name__ == "__main__":
-    load_all_hero_data()
+    results = load_all_hero_data()
+    data_verification.ensure_all_heroes_loaded(results)
+    data_verification.ensure_advantages_within_expected_boundaries(results)
+
     
 
 
