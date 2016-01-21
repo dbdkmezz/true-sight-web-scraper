@@ -1,7 +1,9 @@
 from bs4 import BeautifulSoup
 import re
 import requests
+
 import data_verification
+import write_database
 
 ALL_HERO_NAMES_URL = "http://www.dota2.com/heroes/"
 
@@ -10,8 +12,8 @@ class HeroAndAdvantage:
     advantage = ""
 
     def __init__(self, name, advantage):
-      self.name = name
-      self.advantage = advantage
+        self.name = name.replace("'", "")
+        self.advantage = advantage
 
 
 class AdvantageDataForAHero:
@@ -22,7 +24,7 @@ class AdvantageDataForAHero:
     data = []
 
     def __init__(self, name):
-        self.name = name
+        self.name = name.replace("'", "")
         url = self.ADVANTAGES_URL_START + self.name_to_url_name(name) + self.ADVANTAGES_URL_END
         web_content = load_url(url)
         self.data = self.get_advantages_from_string(web_content)
@@ -87,17 +89,16 @@ def load_all_hero_data():
     web_content = load_url(ALL_HERO_NAMES_URL)
     hero_list = get_hero_names_from_string(web_content)
     results = []
+    total_loaded = 0
     for hero in hero_list:
-        print("Loading " + hero)
+        print("{}. Loading {}".format(total_loaded, hero))
+        total_loaded += 1
         results.append(AdvantageDataForAHero(hero))
         
     return results
 
 if __name__ == "__main__":
     results = load_all_hero_data()
-    data_verification.ensure_all_heroes_loaded(results)
-    data_verification.ensure_advantages_within_expected_boundaries(results)
-
-    
-
+    all_ok = data_verification.run_tests(results)
+    write_database.DatabaseWriter(results)
 
