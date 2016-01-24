@@ -1,8 +1,10 @@
+from bs4 import BeautifulSoup
+
 import scraper
 import unittest
 
 # Example of use:
-# python -m unittest test_scraper.TestHelperFunctions
+# python3 -m unittest test_scraper.TestHelperFunctions
 
 class TestScrapingOfAdvantages(unittest.TestCase):
     def setUp(self):
@@ -24,6 +26,35 @@ class TestScrapingOfAdvantages(unittest.TestCase):
     def test_right_number_loaded(self):
         self.assertEqual(len(self.list), 110)
 
+
+class TestScrapingOfCarryAndSupport(unittest.TestCase):
+    def setUp(self):
+        self.file_string = scraper.load_file("samples/Hero Roles.html")
+
+    def test_get_role_column_carry(self):
+        soup = BeautifulSoup(self.file_string, "html.parser")
+        self.assertEqual(scraper.AdvantageDataForAHero.get_role_column(soup, "Carry"), 1)
+
+    def test_get_role_column_support(self):
+        soup = BeautifulSoup(self.file_string, "html.parser")
+        self.assertEqual(scraper.AdvantageDataForAHero.get_role_column(soup, scraper.AdvantageDataForAHero.SUPPORT_STRING), 5)
+
+class TestScrapingOfMid(unittest.TestCase):
+    def setUp(self):
+        file_string = scraper.load_file("samples/Dotabuff Middle Lane.html")
+        self.soup = BeautifulSoup(file_string, "html.parser")
+
+    def test_high_presence(self):
+        self.assertEqual(scraper.AdvantageDataForAHero.is_mid(self.soup, "Shadow Fiend"), 1)
+
+    def test_just_enough_presence(self):
+        self.assertEqual(scraper.AdvantageDataForAHero.is_mid(self.soup, "Brewmaster"), 1)
+
+    def test_low_presence(self):
+        self.assertEqual(scraper.AdvantageDataForAHero.is_mid(self.soup, "Drow Ranger"), 0)
+
+    def test_not_on_page(self):
+        self.assertEqual(scraper.AdvantageDataForAHero.is_mid(self.soup, "Anti-Mage"), 0)
 
 class TestGetHeroNames(unittest.TestCase):
     def setUp(self):
