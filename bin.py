@@ -2,7 +2,7 @@ import scraper
 import data_verification
 import write_database
 
-ignore_errors = True
+ignore_errors = False
 
 if __name__ == "__main__":
     results = scraper.load_all_hero_data()
