@@ -45,16 +45,16 @@ class TestScrapingOfMid(unittest.TestCase):
         self.soup = BeautifulSoup(file_string, "html.parser")
 
     def test_high_presence(self):
-        self.assertEqual(scraper.AdvantageDataForAHero.static_is_mid(self.soup, "Shadow Fiend"), 1)
+        self.assertEqual(scraper.AdvantageDataForAHero.is_present_in_lane(self.soup, "Shadow Fiend"), 1)
 
     def test_just_enough_presence(self):
-        self.assertEqual(scraper.AdvantageDataForAHero.static_is_mid(self.soup, "Brewmaster"), 1)
+        self.assertEqual(scraper.AdvantageDataForAHero.is_present_in_lane(self.soup, "Brewmaster"), 1)
 
     def test_low_presence(self):
-        self.assertEqual(scraper.AdvantageDataForAHero.static_is_mid(self.soup, "Drow Ranger"), 0)
+        self.assertEqual(scraper.AdvantageDataForAHero.is_present_in_lane(self.soup, "Drow Ranger"), 0)
 
     def test_not_on_page(self):
-        self.assertEqual(scraper.AdvantageDataForAHero.static_is_mid(self.soup, "Anti-Mage"), 0)
+        self.assertEqual(scraper.AdvantageDataForAHero.is_present_in_lane(self.soup, "Anti-Mage"), 0)
 
 class TestGetHeroNames(unittest.TestCase):
     def setUp(self):

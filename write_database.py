@@ -25,11 +25,14 @@ class DatabaseWriter:
 
         self.conn = sqlite3.connect(TABLE_FILE_NAME)
         self.c = self.conn.cursor()
+        
         self.c.execute("""CREATE TABLE Heroes (
-                         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, 
+                         _id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, 
                          name TEXT,
                          is_carry BOOLEAN,
                          is_support BOOLEAN,
+                         is_off_lane BOOLEAN,
+                         is_jungler BOOLEAN,
                          is_mid BOOLEAN)""")
         self.c.execute("""CREATE TABLE Advantages (
                          hero_id INTEGER,
@@ -38,7 +41,7 @@ class DatabaseWriter:
 
     def add_hero_names(self, results):
         for hero in results:
-            self.c.execute("INSERT INTO Heroes (name, is_carry, is_support, is_mid) VALUES ('{}', {}, {}, {})".format(hero.database_name, hero.is_carry, hero.is_support, hero.is_mid))
+            self.c.execute("INSERT INTO Heroes (name, is_carry, is_support, is_off_lane, is_jungler, is_mid) VALUES ('{}', {}, {}, {}, {}, {})".format(hero.database_name, hero.is_carry, hero.is_support, hero.is_off_lane, hero.is_jungler, hero.is_mid))
 
     def add_advantages(self, results):
         for hero in results:
@@ -54,7 +57,7 @@ class DatabaseWriter:
         print("\nDatabase written sucessfully to {}.".format(TABLE_FILE_NAME))
 
     def get_hero_id(self, hero):
-        self.c.execute("SELECT id FROM Heroes WHERE name='{}';".format(hero.database_name))
+        self.c.execute("SELECT _id FROM Heroes WHERE name='{}';".format(hero.database_name))
         fetch_result = self.c.fetchone()
         if(self.ignore_errors == True and fetch_result == None):
             return -1

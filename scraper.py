@@ -23,8 +23,10 @@ class AdvantageDataForAHero:
     CARRY_STRING = "Carry"
     SUPPORT_STRING = "Support"
 
-    MID_LANES_URL = "http://www.dotabuff.com/heroes/lanes?lane=mid"
-    MINIUM_MID_PRESENCE = 30
+    MID_LANE_URL = "http://www.dotabuff.com/heroes/lanes?lane=mid"
+    OFF_LANE_URL = "http://www.dotabuff.com/heroes/lanes?lane=off"
+    JUNGLE_LANE_URL = "http://www.dotabuff.com/heroes/lanes?lane=jungle"
+    MINIUM_LANE_PRESENCE = 30
 
     name = ""
     database_name = ""
@@ -35,6 +37,8 @@ class AdvantageDataForAHero:
     is_carry = None
     is_support = None
     is_mid = None
+    is_off_lane = None
+    is_jungler = None
 
     def __init__(self, name):
         self.name = name
@@ -48,7 +52,9 @@ class AdvantageDataForAHero:
         self.is_carry = self.is_role(soup, self.name, self.CARRY_STRING)
         self.is_support = self.is_role(soup, self.name, self.SUPPORT_STRING)
 
-        self.is_mid = self.is_mid()
+        self.is_mid = self.is_present_in_lane(BeautifulSoup(load_url(self.MID_LANE_URL), "html.parser"), self.name)
+        self.is_off_lane = self.is_present_in_lane(BeautifulSoup(load_url(self.OFF_LANE_URL), "html.parser"), self.name)
+        self.is_jungler = self.is_present_in_lane(BeautifulSoup(load_url(self.JUNGLE_LANE_URL), "html.parser"), self.name)
 
     def load_advantages_data(self):
         url = self.ADVANTAGES_URL_START + self.name_to_url_name(self.name) + self.ADVANTAGES_URL_END
@@ -80,20 +86,17 @@ class AdvantageDataForAHero:
 
         return None
 
-    def is_mid(self):
-        return self.static_is_mid(BeautifulSoup(load_url(self.MID_LANES_URL), "html.parser"), self.name)
-
     # This is a static method, becuase that's better for testing
     @staticmethod
-    def static_is_mid(soup, hero_name):
-        table_soup = soup.find("table", class_="sortable")
+    def is_present_in_lane(lane_soup, hero_name):
+        table_soup = lane_soup.find("table", class_="sortable")
         for row in table_soup.find_all("tr"):
             name_cell = row.find("td", class_="cell-xlarge")
             if((name_cell is not None) and (name_cell.get_text() == hero_name)):
                 # Find the cell with a "%" character in the string
                 presence_cell = row.find(string=re.compile("%"))
                 presence_value = AdvantageDataForAHero.get_num_from_percent(presence_cell)
-                if(presence_value >= AdvantageDataForAHero.MINIUM_MID_PRESENCE):
+                if(presence_value >= AdvantageDataForAHero.MINIUM_LANE_PRESENCE):
                     return 1
                 else:
                     return 0
