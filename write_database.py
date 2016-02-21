@@ -33,7 +33,8 @@ class DatabaseWriter:
                          is_support BOOLEAN,
                          is_off_lane BOOLEAN,
                          is_jungler BOOLEAN,
-                         is_mid BOOLEAN)""")
+                         is_mid BOOLEAN,
+                         is_roaming BOOLEAN)""")
         self.c.execute("""CREATE TABLE Advantages (
                          hero_id INTEGER,
                          enemy_id INTEGER,
@@ -41,7 +42,7 @@ class DatabaseWriter:
 
     def add_hero_names(self, results):
         for hero in results:
-            self.c.execute("INSERT INTO Heroes (name, is_carry, is_support, is_off_lane, is_jungler, is_mid) VALUES ('{}', {}, {}, {}, {}, {})".format(hero.database_name, hero.is_carry, hero.is_support, hero.is_off_lane, hero.is_jungler, hero.is_mid))
+            self.c.execute("INSERT INTO Heroes (name, is_carry, is_support, is_off_lane, is_jungler, is_mid, is_roaming) VALUES ('{}', {}, {}, {}, {}, {}, {})".format(hero.database_name, hero.is_carry, hero.is_support, hero.is_off_lane, hero.is_jungler, hero.is_mid, hero.is_roaming))
 
     def add_advantages(self, results):
         for hero in results:

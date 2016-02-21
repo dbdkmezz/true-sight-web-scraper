@@ -1,14 +1,18 @@
 import scraper
 
 TOTAL_HEROES = 111
-MAX_ADVANTAGE = 10
+MAX_ADVANTAGE = 20
 
 def run_tests(results):
     all_ok = True
+
     if(ensure_all_heroes_loaded(results) == False):
         all_ok = False
     if(ensure_advantages_within_expected_boundaries(results) == False):
         all_ok = False
+    if(ensure_correct_number_roaming_heroes(results) == False):
+        all_ok = False
+
     return all_ok
 
 def ensure_all_heroes_loaded(all_data):
@@ -39,5 +43,18 @@ def ensure_advantages_within_expected_boundaries(all_data):
         print("PASS: All heroes have advantage no more or less than {}.".format(MAX_ADVANTAGE))
     return all_ok
 
-# def get_hero_id(hero_name)
+def ensure_correct_number_roaming_heroes(all_data):
+    roaming_heroes_count = 0
+    for data_for_one_hero in all_data:
+        if data_for_one_hero.is_roaming == 1:
+            roaming_heroes_count = roaming_heroes_count + 1
+
+    all_ok = (len(scraper.AdvantageDataForAHero.ROAMING_HEROES) == roaming_heroes_count)
+
+    if(all_ok == True):
+        print("PASS: Identified {} roaming heroes.".format(len(scraper.AdvantageDataForAHero.ROAMING_HEROES)))
+    else:
+        print("ERROR: Expected {} roaming heroes, but found{}.".format(len(scraper.AdvantageDataForAHero.ROAMING_HEROES), roaming_heroes_count))
+        
+    return all_ok
                 

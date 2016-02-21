@@ -28,6 +28,9 @@ class AdvantageDataForAHero:
     JUNGLE_LANE_URL = "http://www.dotabuff.com/heroes/lanes?lane=jungle"
     MINIUM_LANE_PRESENCE = 30
 
+    ROAMING_STRING = "Roaming"
+    ROAMING_HEROES = ["Crystal Maiden", "Mirana", "Riki", "Venomancer", "Bounty Hunter", "Pudge", "Earthshaker", "Shadow Demon", "Tusk", "Queen of Pain", "Ogre Magi", "Vengeful Spirit", "Chen", "Enchantress", "Earth Spirit", "Techies", "Lion", "Jakiro", "Night Stalker", "Nyx Assassin", "Spirit Breaker", "Shadow Shaman", "Winter Wyvern"]
+
     name = ""
     database_name = ""
     advantages_data = []
@@ -39,6 +42,7 @@ class AdvantageDataForAHero:
     is_mid = None
     is_off_lane = None
     is_jungler = None
+    is_roaming = None
 
     def __init__(self, name):
         self.name = name
@@ -47,14 +51,12 @@ class AdvantageDataForAHero:
         self.load_advantages_data()
 
     def load_roles(self):
-        web_content = load_url(self.HERO_ROLES_URL)
-        soup = BeautifulSoup(web_content, "html.parser")
-        self.is_carry = self.is_role(soup, self.name, self.CARRY_STRING)
-        self.is_support = self.is_role(soup, self.name, self.SUPPORT_STRING)
-
-        self.is_mid = self.is_present_in_lane(BeautifulSoup(load_url(self.MID_LANE_URL), "html.parser"), self.name)
-        self.is_off_lane = self.is_present_in_lane(BeautifulSoup(load_url(self.OFF_LANE_URL), "html.parser"), self.name)
-        self.is_jungler = self.is_present_in_lane(BeautifulSoup(load_url(self.JUNGLE_LANE_URL), "html.parser"), self.name)
+        self.is_carry = self.is_role(self.name, self.CARRY_STRING)
+        self.is_support = self.is_role(self.name, self.SUPPORT_STRING)
+        self.is_mid = self.is_role(self.name, self.MID_LANE_URL)
+        self.is_off_lane = self.is_role(self.name, self.OFF_LANE_URL)
+        self.is_jungler = self.is_role(self.name, self.JUNGLE_LANE_URL)
+        self.is_roaming = self.is_role(self.name, self.ROAMING_STRING)
 
     def load_advantages_data(self):
         url = self.ADVANTAGES_URL_START + self.name_to_url_name(self.name) + self.ADVANTAGES_URL_END
@@ -62,7 +64,18 @@ class AdvantageDataForAHero:
         self.advantages_data = self.get_advantages_from_string(web_content)
 
     @staticmethod
-    def is_role(soup, hero_name, role_name):
+    def is_role(hero_name, role_name):
+        if((role_name == AdvantageDataForAHero.CARRY_STRING) or (role_name == AdvantageDataForAHero.SUPPORT_STRING)):
+            web_content = load_url(AdvantageDataForAHero.HERO_ROLES_URL)
+            soup = BeautifulSoup(web_content, "html.parser")
+            return AdvantageDataForAHero.is_role_from_teamliquid(soup, hero_name, role_name)
+        if((role_name == AdvantageDataForAHero.MID_LANE_URL) or (role_name == AdvantageDataForAHero.OFF_LANE_URL) or (role_name == AdvantageDataForAHero.JUNGLE_LANE_URL)):
+            return AdvantageDataForAHero.is_role_from_dotabuff(BeautifulSoup(load_url(role_name), "html.parser"), hero_name)
+        if(role_name == AdvantageDataForAHero.ROAMING_STRING):
+            return AdvantageDataForAHero.is_roaming_hero(hero_name)
+
+    @staticmethod
+    def is_role_from_teamliquid(soup, hero_name, role_name):
         comparison_name = hero_name.replace("-", "")
         role_column = AdvantageDataForAHero.get_role_column(soup, role_name)
         table_soup = soup.find("table", class_="wikitable sortable collapsible collapsed")
@@ -88,7 +101,7 @@ class AdvantageDataForAHero:
 
     # This is a static method, becuase that's better for testing
     @staticmethod
-    def is_present_in_lane(lane_soup, hero_name):
+    def is_role_from_dotabuff(lane_soup, hero_name):
         table_soup = lane_soup.find("table", class_="sortable")
         for row in table_soup.find_all("tr"):
             name_cell = row.find("td", class_="cell-xlarge")
@@ -109,6 +122,13 @@ class AdvantageDataForAHero:
         name = name.replace(" ", "-")
         name = name.replace("'", "")
         return name
+
+    @staticmethod
+    def is_roaming_hero(hero_name):
+        if(hero_name in AdvantageDataForAHero.ROAMING_HEROES):
+            return 1
+        else:
+            return 0
 
     @staticmethod
     def get_advantages_from_string(web_content):
