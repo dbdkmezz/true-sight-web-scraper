@@ -23,6 +23,7 @@ class AdvantageDataForAHero:
     CARRY_STRING = "Carry"
     SUPPORT_STRING = "Support"
 
+    SAFE_LANE_URL = "http://www.dotabuff.com/heroes/lanes?lane=safe"
     MID_LANE_URL = "http://www.dotabuff.com/heroes/lanes?lane=mid"
     OFF_LANE_URL = "http://www.dotabuff.com/heroes/lanes?lane=off"
     JUNGLE_LANE_URL = "http://www.dotabuff.com/heroes/lanes?lane=jungle"
@@ -65,11 +66,15 @@ class AdvantageDataForAHero:
 
     @staticmethod
     def is_role(hero_name, role_name):
+        if(role_name == AdvantageDataForAHero.CARRY_STRING):
+           if(AdvantageDataForAHero.is_role(hero_name, AdvantageDataForAHero.SAFE_LANE_URL) == 0):
+               return 0
+
         if((role_name == AdvantageDataForAHero.CARRY_STRING) or (role_name == AdvantageDataForAHero.SUPPORT_STRING)):
             web_content = load_url(AdvantageDataForAHero.HERO_ROLES_URL)
             soup = BeautifulSoup(web_content, "html.parser")
             return AdvantageDataForAHero.is_role_from_teamliquid(soup, hero_name, role_name)
-        if((role_name == AdvantageDataForAHero.MID_LANE_URL) or (role_name == AdvantageDataForAHero.OFF_LANE_URL) or (role_name == AdvantageDataForAHero.JUNGLE_LANE_URL)):
+        if((role_name == AdvantageDataForAHero.MID_LANE_URL) or (role_name == AdvantageDataForAHero.OFF_LANE_URL) or (role_name == AdvantageDataForAHero.JUNGLE_LANE_URL) or (role_name == AdvantageDataForAHero.SAFE_LANE_URL)):
             return AdvantageDataForAHero.is_role_from_dotabuff(BeautifulSoup(load_url(role_name), "html.parser"), hero_name)
         if(role_name == AdvantageDataForAHero.ROAMING_STRING):
             return AdvantageDataForAHero.is_roaming_hero(hero_name)
