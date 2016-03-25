@@ -39,6 +39,17 @@ class TestScrapingOfCarryAndSupport(unittest.TestCase):
         soup = BeautifulSoup(self.file_string, "html.parser")
         self.assertEqual(scraper.AdvantageDataForAHero.get_role_column(soup, scraper.AdvantageDataForAHero.SUPPORT_STRING), 5)
 
+    def test_carry(self):
+        soup = BeautifulSoup(self.file_string, "html.parser")
+        self.assertEqual(scraper.AdvantageDataForAHero.is_role_from_teamliquid(soup, "Antimage", scraper.AdvantageDataForAHero.CARRY_STRING), 1)
+
+    def test_not_carry(self):
+        soup = BeautifulSoup(self.file_string, "html.parser")
+        self.assertEqual(scraper.AdvantageDataForAHero.is_role_from_teamliquid(soup, "Disruptor", scraper.AdvantageDataForAHero.CARRY_STRING), 0)
+
+    def test_sub_string_not_carry(self):
+        soup = BeautifulSoup(self.file_string, "html.parser")
+        self.assertEqual(scraper.AdvantageDataForAHero.is_role_from_teamliquid(soup, "nt", scraper.AdvantageDataForAHero.CARRY_STRING), 0)
 
 class TestScrapingOfMid(unittest.TestCase):
     def setUp(self):

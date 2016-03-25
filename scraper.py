@@ -52,7 +52,7 @@ class AdvantageDataForAHero:
         self.load_advantages_data()
 
     def load_roles(self):
-        self.is_carry = self.is_role(self.name, self.CARRY_STRING)
+        self.is_carry = self.is_role(self.name, self.CARRY_STRING) and self.is_role(self.name, self.SAFE_LANE_URL)
         self.is_support = self.is_role(self.name, self.SUPPORT_STRING)
         self.is_mid = self.is_role(self.name, self.MID_LANE_URL)
         self.is_off_lane = self.is_role(self.name, self.OFF_LANE_URL)
@@ -66,10 +66,6 @@ class AdvantageDataForAHero:
 
     @staticmethod
     def is_role(hero_name, role_name):
-        if(role_name == AdvantageDataForAHero.CARRY_STRING):
-           if(AdvantageDataForAHero.is_role(hero_name, AdvantageDataForAHero.SAFE_LANE_URL) == 0):
-               return 0
-
         if((role_name == AdvantageDataForAHero.CARRY_STRING) or (role_name == AdvantageDataForAHero.SUPPORT_STRING)):
             web_content = load_url(AdvantageDataForAHero.HERO_ROLES_URL)
             soup = BeautifulSoup(web_content, "html.parser")
@@ -82,11 +78,12 @@ class AdvantageDataForAHero:
     @staticmethod
     def is_role_from_teamliquid(soup, hero_name, role_name):
         comparison_name = hero_name.replace("-", "")
+        comparison_name = "^" + comparison_name + " *$" # These characters are needed to ensure the name goes from the start of a line to the end of a line (otherwise sub-strings like "Io" would get found in other heroe's names)
         role_column = AdvantageDataForAHero.get_role_column(soup, role_name)
         table_soup = soup.find("table", class_="wikitable sortable collapsible collapsed")
         rows = table_soup.find_all("tr")
         for row in rows:
-            if(re.search(comparison_name, row.get_text(), flags=re.IGNORECASE) != None):
+            if(re.search(comparison_name, row.get_text(), flags=re.IGNORECASE|re.MULTILINE) != None):
                 if(re.search("★", row.find_all("td")[role_column].get_text())):
                     return 1
         
