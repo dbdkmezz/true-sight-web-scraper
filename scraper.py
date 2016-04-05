@@ -20,6 +20,7 @@ class AdvantageDataForAHero:
     ADVANTAGES_URL_END = "/matchups"
 
     HERO_ROLES_URL = "http://wiki.teamliquid.net/dota2/Hero_Roles"
+    HERO_ROLES_FILE = "samples/Hero Roles.html"
     CARRY_STRING = "Carry"
     SUPPORT_STRING = "Support"
 
@@ -67,7 +68,7 @@ class AdvantageDataForAHero:
     @staticmethod
     def is_role(hero_name, role_name):
         if((role_name == AdvantageDataForAHero.CARRY_STRING) or (role_name == AdvantageDataForAHero.SUPPORT_STRING)):
-            web_content = load_url(AdvantageDataForAHero.HERO_ROLES_URL)
+            web_content = load_file(AdvantageDataForAHero.HERO_ROLES_FILE) # load_url(AdvantageDataForAHero.HERO_ROLES_URL)
             soup = BeautifulSoup(web_content, "html.parser")
             return AdvantageDataForAHero.is_role_from_teamliquid(soup, hero_name, role_name)
         if((role_name == AdvantageDataForAHero.MID_LANE_URL) or (role_name == AdvantageDataForAHero.OFF_LANE_URL) or (role_name == AdvantageDataForAHero.JUNGLE_LANE_URL) or (role_name == AdvantageDataForAHero.SAFE_LANE_URL)):

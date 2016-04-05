@@ -60,6 +60,7 @@ target/
 
 # Emacs files:
 *~
+*#
 
 # Databases:
 *.db
