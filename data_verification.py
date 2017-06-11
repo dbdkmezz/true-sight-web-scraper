@@ -1,7 +1,7 @@
 import scraper
 
 TOTAL_HEROES = 113
-MAX_ADVANTAGE = 20
+MAX_ADVANTAGE = 31
 MIN_HEROES_IN_EACH_ROLE = 5
 
 def run_tests(results):
