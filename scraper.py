@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import re
 import requests
+import requests_cache
 
 ALL_HERO_NAMES_URL = "http://www.dota2.com/heroes/"
 
@@ -143,7 +144,7 @@ class AdvantageDataForAHero:
         for row in soup.find_all(AdvantageDataForAHero.has_data_link_to_attr):
             name = row.find(class_="cell-xlarge").get_text()
             advantage_cell = row.find(string=re.compile("%"))
-            advantage = AdvantageDataForAHero.get_num_from_percent(advantage_cell)
+            advantage = -1 * AdvantageDataForAHero.get_num_from_percent(advantage_cell)
             list.append(HeroAndAdvantage(name, advantage))
 
         return list
@@ -187,6 +188,8 @@ def get_hero_names_from_string(content):
     return list
 
 def load_all_hero_data():
+    requests_cache.install_cache()
+    requests_cache.clear()
     web_content = load_url(ALL_HERO_NAMES_URL)
     hero_list = get_hero_names_from_string(web_content)
     results = []
